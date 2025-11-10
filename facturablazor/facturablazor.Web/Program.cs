@@ -8,6 +8,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
+builder.Services.AddSingleton<FacturaServicio>();
+
+
 // Add device-specific services used by the facturablazor.Shared project
 builder.Services.AddSingleton<IFormFactor, FormFactor>();
 
