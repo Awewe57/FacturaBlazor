@@ -1,0 +1,34 @@
+﻿@page "/"
+@using facturablazor.Web.Services
+@inject FacturaServicio Servicio
+
+<h3>Lista de Facturas</h3>
+
+<a href="/NuevaFactura" class="btn btn-primary">Nueva Factura</a>
+
+@if (Servicio.ObtenerFacturas().Count == 0)
+{
+    <p>No hay facturas registradas aún.</p>
+}
+else
+{
+    <table class="table table-bordered mt-3">
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Cliente</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var factura in Servicio.ObtenerFacturas())
+            {
+                <tr>
+                    <td>@factura.Fecha.ToShortDateString()</td>
+                    <td>@factura.NombreCliente</td>
+                    <td>$@factura.Total</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

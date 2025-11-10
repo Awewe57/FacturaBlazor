@@ -1,0 +1,88 @@
+﻿@page "/NuevaFactura"
+@inject FacturaServicio Servicio
+@using facturablazor.ArFac
+@using facturablazor.Web.Services
+
+<h3>Nueva Factura</h3>
+
+<div class="card p-3">
+    <div class="mb-3">
+        <label>Fecha:</label>
+        <input type="date" @bind="factura.Fecha" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Nombre del cliente:</label>
+        <input type="text" @bind="factura.NombreCliente" class="form-control" />
+    </div>
+
+    <h5>Artículos</h5>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Precio</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var art in factura.Articulos)
+            {
+                <tr>
+                    <td>@art.Nombre</td>
+                    <td>$@art.Precio</td>
+                    <td>
+                        <button class="btn btn-danger btn-sm" @onclick="() => EliminarArticulo(art)">X</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="input-group mb-3">
+        <input type="text" class="form-control" placeholder="Nombre del artículo" @bind="nuevoArticulo.Nombre" />
+        <input type="number" class="form-control" placeholder="Precio" @bind="nuevoArticulo.Precio" />
+        <button class="btn btn-success" @onclick="AgregarArticulo">Agregar</button>
+    </div>
+
+    <h5>Total: $@factura.Total</h5>
+
+    <button class="btn btn-primary mt-3" @onclick="GuardarFactura">Guardar Factura</button>
+</div>
+
+@code {
+    private Factura factura = new();
+    private Articulo nuevoArticulo = new();
+
+    void AgregarArticulo()
+    {
+        if (!string.IsNullOrWhiteSpace(nuevoArticulo.Nombre) && nuevoArticulo.Precio > 0)
+        {
+            factura.Articulos.Add(new Articulo
+            {
+                Nombre = nuevoArticulo.Nombre,
+                Precio = nuevoArticulo.Precio
+            });
+            nuevoArticulo = new Articulo();
+        }
+    }
+
+    void EliminarArticulo(Articulo art)
+    {
+        factura.Articulos.Remove(art);
+    }
+
+    void GuardarFactura()
+    {
+        if (string.IsNullOrWhiteSpace(factura.NombreCliente) || factura.Articulos.Count == 0)
+            return;
+
+        Servicio.AgregarFactura(factura);
+        factura = new Factura();
+        nuevoArticulo = new Articulo();
+        NavigationManager.NavigateTo("/");
+    }
+
+    [Inject]
+    public NavigationManager NavigationManager { get; set; }
+}
